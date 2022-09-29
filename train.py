@@ -56,6 +56,9 @@ with strategy.scope():
 
 history=model.fit(train_images, train_labels, epochs=3, batch_size=32, validation_data=(test_images, test_labels))
 
+# Saving results.
+# NOTE: you need to save stuff for outside the container in /tmp
+#       as this is the folder where the outside is mounted.
 model.save('/tmp/fitted_model/')
-with open('train_history.pkl', 'wb') as hist_file:
+with open('/tmp/train_history.pkl', 'wb') as hist_file:
         pickle.dump(history, hist_file)
