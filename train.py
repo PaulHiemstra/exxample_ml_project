@@ -1,6 +1,7 @@
 import tensorflow as tf
 #tf.debugging.set_log_device_placement(True)
 from keras.preprocessing.image import ImageDataGenerator
+import pickle
 
 # Use all gpu's 
 strategy = tf.distribute.MirroredStrategy()
@@ -53,4 +54,8 @@ with strategy.scope():
 		      loss="sparse_categorical_crossentropy",
 		      metrics=["accuracy"])
 
-history=model.fit(train_images, train_labels, epochs=100, batch_size=32, validation_data=(test_images, test_labels))
+history=model.fit(train_images, train_labels, epochs=3, batch_size=32, validation_data=(test_images, test_labels))
+
+model.save('/tmp/fitted_model/')
+with open('train_history.pkl', 'wb') as hist_file:
+        pickle.dump(history, hist_file)
