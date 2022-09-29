@@ -1,0 +1,15 @@
+{
+  "image": "tensorflow/tensorflow:latest-gpu-jupyter",
+  "forwardPorts": [8888],
+  "postStartCommand": "nohup bash -c 'jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --NotebookApp.token=jupdevtoken &'",
+  "runArgs": [
+    "--gpus",
+    "all"
+  ],
+  "extensions": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-toolsai.jupyter"
+  ],
+  "postCreateCommand": "pip3 install -r requirements.txt"
+}
