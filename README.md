@@ -41,3 +41,5 @@ Note that if you fire up the training script, be sure to launch this in tmux and
 	- Means we could ditch tmux
 - Do we want to use a container registry? 
 - Fix requirements.txt problem, I currently hardcode the packages in the docker file. 
+- Kijk eens naar monitoring zoals TensorBoard, al dacht ik dat MLflow ook wel wat zaken ondersteund. 
+- Kijk naar KerasTuner en andere optim frameworks. 
