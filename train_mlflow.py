@@ -44,9 +44,10 @@ model = models.Sequential([
 	layers.Dropout(0.5),
 	layers.Dense(10, activation="softmax")
 ])
-model.compile(optimizer="ADAM",
+opt = tf.keras.optimizers.Adam(learning_rate=0.00001)
+model.compile(optimizer=opt,
 			loss="sparse_categorical_crossentropy",
 			metrics=["accuracy"])
 
-mlflow.keras.autolog()
+mlflow.tensorflow.autolog()
 history=model.fit(train_images, train_labels, epochs=3, batch_size=32, validation_data=(test_images, test_labels))
