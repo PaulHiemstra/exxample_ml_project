@@ -15,6 +15,10 @@ The following files can be found in the repo template:
 - `train.py` the training script that is used to train the model when running from the CLI when running on a server. 
 
 # Work with the repo
+- Focus is that the repo contains all that is needed to run the analysis:
+    - Docker file to run the analysis from the CLI on a server. 
+    - .devcontainer.json file that also uses this dockerfile to run the same analysis locally. 
+    
 ### Locally using VS Code
 The use case here is more interactive use as the local GPU is bound to be less powerful than the remote one. 
 
@@ -51,7 +55,9 @@ MLFlow is included in the container, and the UI can be started using the followi
 
     > bash run_mlflow_ui.bash
 
-Note that this does not simply run `mlflow ui`, but also [fixes the artifact path](https://github.com/mlflow/mlflow/issues/3144#issuecomment-782681919). After running the command you can open your browser and point it to `localhost:5000`. 
+Note that this does not simply run `mlflow ui`, but also [fixes the artifact path](https://github.com/mlflow/mlflow/issues/3144#issuecomment-782681919) that results from transporting the mlflow results between machines. After running the command you can open your browser and point it to `localhost:5000`. 
+
+Note that the `mlruns` directory is not stored in git as it balloons in size quite quickly. If you want to transport the mlflow results between machines you can use tools like `rsync` to simply sync between multiple locations. The typical setup would be that you run the experiments on the server, but visualise them using `mlflow` locally. 
 
 # TODO
 - Integrate MLFlow for experiment tracking. This makes it a lot easier to track progress over time. When for each experiment you create a new commit in git you could reproduce all the results, this does not make it easy to quickly browse through earlier results. 
