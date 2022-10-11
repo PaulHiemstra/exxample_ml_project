@@ -32,28 +32,32 @@ where:
 - `-v ${PWD}:/tmp` mounts the local working folder inside the container at /tmp. This makes it possible to call the script using `/tmp/train.py`. 
 - If you built the container earlier, just running docker run should suffice. 
 
-Note that if you fire up the training script, be sure to launch this in tmux and detach. Otherwise, closing the ssh connection will kill the training proces. 
+Note that if you fire up the training script, be sure to launch this in tmux and detach. Otherwise, closing the ssh connection will kill the training proces. A helper script, `run_script.bash`, builds the container, starts the container and runs the script you pass to it inside the container. Usage is:
+
+    > run_script.bash <commands to run inside the container>
+
+for example:
+
+    > run_script.bash python train_mlflow.py
+
+runs the example mlflow training. 
 
 # MLFlow
 ### MLFlow Philosophy
 TODO: How do we use MLFlow and why. 
 
 ### Exploring the MLFlow results
-MLFlow is included in the container, and the UI can be started using the following command:
+MLFlow is included in the container, and the UI can be started using the following command issued inside the container (using the VS Code terminal for example):
 
-    > mlflow ui
+    > bash run_mlflow_ui.bash
 
-if you run the app locally you can acces the terminal inside the container and run this command. When running from the CLI you can start the container again, but then using:
-
-    docker run --gpus all -v ${PWD}:/tmp example_ml mlflow ui
-
-In any case you need to open localhost:5000 to acces the UI, which might be hard on the server. Passing the port on to a local machine using an SSH tunnel might be a solution. 
+Note that this does not simply run `mlflow ui`, but also [fixes the artifact path](https://github.com/mlflow/mlflow/issues/3144#issuecomment-782681919). After running the command you can open your browser and point it to `localhost:5000`. 
 
 # TODO
 - Integrate MLFlow for experiment tracking. This makes it a lot easier to track progress over time. When for each experiment you create a new commit in git you could reproduce all the results, this does not make it easy to quickly browse through earlier results. 
     - How much data does MLflow store? Is it feasible to save this is a github repo? **DONE: for realistic models it takes quite some space. So storing this in the github repo is not realistic.**
     - Does MLFlow integrate with frameworks as Keras tuner? 
-    - Add other artifacts such as accuracy plots. 
+    - Add other artifacts such as accuracy plots. **DONE: took some additional work as the artifact path was absolute inside the container where the experiment was run, not the container where the mlflow ui runs.**
     - Write a function that summarizes the architecture of a Keras model, and dump this as MLFlow information. Make smart choices how to do this. 
     - Look at MLFlow models, is it worth it to expand to that or just stick to the tracking API? 
 - Look at running everything inside the container. 

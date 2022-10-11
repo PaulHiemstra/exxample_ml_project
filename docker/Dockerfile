@@ -5,3 +5,4 @@ RUN pip install pandas\
     sklearn\
     seaborn\
     mlflow\
+    mlf-core\
