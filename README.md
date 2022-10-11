@@ -24,7 +24,7 @@ Just clone the folder and open with VS Code. Assuming Docker Desktop is running,
 Run the following docker commands to build the container and run the model into it:
 
     docker build -t example_ml docker
-    docker run --gpus all -v ${PWD}:/tmp example_ml python /tmp/train.py
+    docker run --gpus all -v ${PWD}:/tmp example_ml python train.py
 
 where:
 - `-t` is the tag we use to refer to the container. Mind that if you run multiple of these simulteously, you should take care to use a unique tag. t
@@ -34,12 +34,31 @@ where:
 
 Note that if you fire up the training script, be sure to launch this in tmux and detach. Otherwise, closing the ssh connection will kill the training proces. 
 
+# MLFlow
+### MLFlow Philosophy
+TODO: How do we use MLFlow and why. 
+
+### Exploring the MLFlow results
+MLFlow is included in the container, and the UI can be started using the following command:
+
+    > mlflow ui
+
+if you run the app locally you can acces the terminal inside the container and run this command. When running from the CLI you can start the container again, but then using:
+
+    docker run --gpus all -v ${PWD}:/tmp example_ml mlflow ui
+
+In any case you need to open localhost:5000 to acces the UI, which might be hard on the server. Passing the port on to a local machine using an SSH tunnel might be a solution. 
+
 # TODO
 - Integrate MLFlow for experiment tracking. This makes it a lot easier to track progress over time. When for each experiment you create a new commit in git you could reproduce all the results, this does not make it easy to quickly browse through earlier results. 
-    - How much data does MLflow store? Is it feasible to save this is a github repo? 
+    - How much data does MLflow store? Is it feasible to save this is a github repo? **DONE: for realistic models it takes quite some space. So storing this in the github repo is not realistic.**
+    - Does MLFlow integrate with frameworks as Keras tuner? 
+    - Add other artifacts such as accuracy plots. 
+    - Write a function that summarizes the architecture of a Keras model, and dump this as MLFlow information. Make smart choices how to do this. 
+    - Look at MLFlow models, is it worth it to expand to that or just stick to the tracking API? 
 - Look at running everything inside the container. 
 	- Means we could ditch tmux
 - Do we want to use a container registry? 
 - Fix requirements.txt problem, I currently hardcode the packages in the docker file. 
-- Kijk eens naar monitoring zoals TensorBoard, al dacht ik dat MLflow ook wel wat zaken ondersteund. 
 - Kijk naar KerasTuner en andere optim frameworks. 
+    - Keras Tuner en MLFlow?

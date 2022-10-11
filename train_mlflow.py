@@ -3,6 +3,7 @@ import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 import pickle
 import mlflow
+from support_functions import *
 
 from tensorflow.keras import datasets, layers, models
 (train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
@@ -51,3 +52,7 @@ model.compile(optimizer=opt,
 
 mlflow.tensorflow.autolog()
 history=model.fit(train_images, train_labels, epochs=3, batch_size=32, validation_data=(test_images, test_labels))
+
+pltloc = 'tmp/acc_plot.png'
+plot_accuracy(history, pltloc)
+mlflow.log_artifact(pltloc)
