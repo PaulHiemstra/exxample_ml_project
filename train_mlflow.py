@@ -1,3 +1,8 @@
+# Suppres log messages from Tensorflow other than Errors
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
+
+from pathlib import Path
 import tensorflow as tf
 #tf.debugging.set_log_device_placement(True)
 from keras.preprocessing.image import ImageDataGenerator
@@ -45,14 +50,21 @@ model = models.Sequential([
 	layers.Dropout(0.5),
 	layers.Dense(10, activation="softmax")
 ])
-opt = tf.keras.optimizers.Adam(learning_rate=0.00001)
+opt = tf.keras.optimizers.Adam(learning_rate=0.001)
 model.compile(optimizer=opt,
 			loss="sparse_categorical_crossentropy",
 			metrics=["accuracy"])
 
-mlflow.tensorflow.autolog()
-history=model.fit(train_images, train_labels, epochs=3, batch_size=32, validation_data=(test_images, test_labels))
+# You need to use mlflow.start_run when issuing more MLFlow commands than just
+# autolog. If not, the autolog and the separate calls will be logged as two different 
+# experiments
+with mlflow.start_run():
+	print('tracking uri:', mlflow.get_tracking_uri())
+	print('artifact uri:', mlflow.get_artifact_uri())
+	mlflow.tensorflow.autolog() # Get the bulk of the logging from autolog
+	history=model.fit(train_images, train_labels, epochs=3, batch_size=2048, validation_data=(test_images, test_labels))
 
-pltloc = 'tmp/acc_plot.png'
-plot_accuracy(history, pltloc)
-mlflow.log_artifact(pltloc)
+	Path('tmp').mkdir(exist_ok=True)
+	pltloc = 'tmp/acc_plot.png'
+	plot_accuracy(history, pltloc)
+	mlflow.log_artifact(pltloc)   # Add a accuracy/val_accuracy plot as artifact
