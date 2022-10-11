@@ -1,7 +1,7 @@
 {
   "name": "Tensorflow with Jupyter (GPU enabled)",
   "build": { "dockerfile": "docker/Dockerfile" },
-  "forwardPorts": [8888],
+  "forwardPorts": [8888, 5000],
   "postStartCommand": "nohup bash -c 'jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --NotebookApp.token=jupdevtoken &'",
   "runArgs": [
     "--gpus",
