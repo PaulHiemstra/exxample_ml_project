@@ -64,7 +64,14 @@ with mlflow.start_run():
 	mlflow.tensorflow.autolog() # Get the bulk of the logging from autolog
 	history=model.fit(train_images, train_labels, epochs=3, batch_size=2048, validation_data=(test_images, test_labels))
 
-	Path('tmp').mkdir(exist_ok=True)
-	pltloc = 'tmp/acc_plot.png'
+	# Save and log artifacts for mlflow
+	save_path = 'tmp'
+	Path(save_path).mkdir(exist_ok=True)
+	pltloc = '%s/acc_plot.png' % save_path
 	plot_accuracy(history, pltloc)
 	mlflow.log_artifact(pltloc)   # Add a accuracy/val_accuracy plot as artifact
+
+	hist_loc = '%s/history.pkl' % save_path
+	with open(hist_loc, 'wb') as pkl_file:
+		pickle.dump(history, pkl_file)
+	mlflow.log_artifact(hist_loc)
