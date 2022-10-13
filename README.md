@@ -3,16 +3,19 @@ The goal of this repository is to provide an example of how an ML repo can be or
 
 - Data. Using different data for training and/or validation leads to a different result. Using a version control system such as Git is only feasible for very small datasets, for large datasets a good database that support versioning is needed. Alternatively, for a relatively static dataset a simpler scheme using for example different folders might be sufficient. Fixing the data problem is not in scope of this particular repo, we assume that the data is correct and static from the pov of the repo. 
 - Software. Different versions of say Keras will lead to different outcomes. The repo fixes this by using a docker container to run the software in. In the Dockerfile we can exactly specify which versions of the software should be loaded. This makes reproducing the exact software environment feasible as long as the base containers and libraries can be loaded. For really long term reproducibility you could opt to build the container and store this explicity. Although you might want to go for an actual container registry system at that stage. 
-- Training configuration. Different settings for number of layers, number of neurons, hyperparameter settings, etc will influence the outcome you get. Fortunately, these settings are stored in code. So if you store that code correctly (e.g. in `train.py`), this should ensure reproducibility in combination with the environment we already have from the container. 
+- Training configuration. Different settings for number of layers, number of neurons, hyperparameter settings, etc will influence the outcome you get. Fortunately, these settings are stored in code. So if you store that code correctly (e.g. in `train_mlflow.py`), this should ensure reproducibility in combination with the environment we already have from the container. 
 
-So, given the data the experiement can be repeated using a system that runs docker using the dockerfile and the train.py file. Changes over time can be saved using git commits, making it possible to trace the changes over time. However, this is probably not a very good solution when the number of trial-and-error gets really big. You could lose track of which things you already tried, especially when you transfer the experiment to someone else to work on. Here, a system such as MLflow probably makes a lot of sense. 
+So, given the data the experiement can be repeated using a system that runs docker using the dockerfile and the `train_mlflow.py` file. Changes over time can be saved using git commits, making it possible to trace the changes over time. However, this is probably not a very good solution when the number of trial-and-error gets really big. You could lose track of which things you already tried, especially when you transfer the experiment to someone else to work on. Here, a system such as MLflow probably makes a lot of sense. 
 
 The following files can be found in the repo template:
 
 - `docker` this folder contains the docker file to build the container needed to run the experiment.
-- `.devcontainer.json` Visual Studio Code will pick up this file when loading the repo locally using VS Code. This will automatically load the appropriate VS Code packages, launch the docker container and start Jupyter Notebook. 
-- `train.py` the training script that is used to train the model when running from the CLI when running on a server. 
+- `.devcontainer.json` Visual Studio Code will pick up this file when loading the repo locally using VS Code. This will automatically load the appropriate VS Code packages, launch the docker container and start Jupyter Notebook.  
 - `train_mlflow.py` training a model, but including tracking of experiment settings using MLFlow. 
+- `Example Notebook.ipynb` a notebook that documents the model we built. 
+- `support_functions.py` some python helper functions that can be used in all Python scripts and Notebooks. 
+- `run_mlflow_ui.bash` helper script to launch `mlflow ui`.
+- `run_script.bash` helper script that builds the container, and launches the given script inside it.  
 
 # Working with the repository
 This repo assumes that it will be used simultaneously in two environments:
@@ -41,7 +44,7 @@ Here I assume you have ssh access to the remote server, and you know how to set 
 To actually run the scripts in the container we use the following docker commands:
 
     docker build -t example_ml docker
-    docker run --gpus all -v ${PWD}:/tmp example_ml python train.py
+    docker run --gpus all -v ${PWD}:/tmp example_ml python train_mlflow.py
 
 where:
 - `-t` is the tag we use to refer to the container. Mind that if you run multiple of these simulteously, you should take care to use a unique tag. 
@@ -53,13 +56,13 @@ Note that if you fire up the training script, be sure to launch this in [tmux](h
 
 A helper script, `run_script.bash`, builds the container, starts the container and runs the script you pass to it inside the container. Usage is:
 
-    > run_script.bash <commands to run inside the container>
+    > bash run_script.bash <commands to run inside the container>
 
 for example:
 
-    > run_script.bash python train_mlflow.py
+    > bash run_script.bash python train_mlflow.py --learning-rate 0.1 --no-epochs 10
 
-runs the example mlflow training. 
+runs the example mlflow training. You can setup a number of runs this way using bash scripts, see for example `multiple_experiments.bash`. 
 
 # MLFlow
 ## MLFlow Philosophy
@@ -92,7 +95,9 @@ and if you click on the link under `Created` you get a detailed view of that par
     - Add other artifacts such as accuracy plots. **DONE: took some additional work as the artifact path was absolute inside the container where the experiment was run, not the container where the mlflow ui runs.**
     - Write a function that summarizes the architecture of a Keras model, and dump this as MLFlow information. Make smart choices how to do this. 
     - Look at MLFlow models, is it worth it to expand to that or just stick to the tracking API? 
-    - We could remove the saving of information in `train.py`, we will be relying on MLFlow either way. 
+        - **partly done** I took the first step of setting up the training script correctly. Now the next step is to run all the code inside the container if we want to start using `MLFlow model`. 
+    - We could remove the saving of information in `train.py`, we will be relying on MLFlow either way. **Done**
+    - Look at using MLFlow directly to create and run the docker environment, see [this link](https://github.com/mlflow/mlflow/tree/master/examples/docker)
 - Look at running everything inside the container. 
 	- Means we could ditch tmux
 - Do we want to use a container registry? 

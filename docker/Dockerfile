@@ -6,3 +6,4 @@ RUN pip install pandas\
     seaborn\
     mlflow\
     mlf-core\
+    plotnine
