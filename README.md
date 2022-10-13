@@ -11,14 +11,13 @@ The following files can be found in the repo template:
 
 - `docker` this folder contains the docker file to build the container needed to run the experiment.
 - `.devcontainer.json` Visual Studio Code will pick up this file when loading the repo locally using VS Code. This will automatically load the appropriate VS Code packages, launch the docker container and start Jupyter Notebook. 
-- `requirements.txt` additional packages that need to be installed inside the container after the base image has been loaded. (note sure if this is needed, currely hardcode them in the docker file). 
 - `train.py` the training script that is used to train the model when running from the CLI when running on a server. 
 
 # Work with the repo
 - Focus is that the repo contains all that is needed to run the analysis:
     - Docker file to run the analysis from the CLI on a server. 
     - .devcontainer.json file that also uses this dockerfile to run the same analysis locally. 
-    
+
 ### Locally using VS Code
 The use case here is more interactive use as the local GPU is bound to be less powerful than the remote one. 
 
