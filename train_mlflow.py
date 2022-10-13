@@ -15,6 +15,7 @@ from tensorflow.keras import datasets, layers, models
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--learning-rate")
+parser.add_argument("--batch-size")
 parser.add_argument("--no-epochs")
 args = parser.parse_args()
 
@@ -67,10 +68,8 @@ model.compile(optimizer=opt,
 # autolog. If not, the autolog and the separate calls will be logged as two different 
 # experiments
 with mlflow.start_run():
-	print('tracking uri:', mlflow.get_tracking_uri())
-	print('artifact uri:', mlflow.get_artifact_uri())
 	mlflow.tensorflow.autolog() # Get the bulk of the logging from autolog
-	history=model.fit(train_images, train_labels, epochs=int(args.no_epochs), batch_size=2048, validation_data=(test_images, test_labels))
+	history=model.fit(train_images, train_labels, epochs=int(args.no_epochs), batch_size=int(args.batch_size), validation_data=(test_images, test_labels))
 
 	# Save and log artifacts for mlflow
 	save_path = 'tmp'
