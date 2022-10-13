@@ -3,6 +3,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # or any {'0', '1', '2'}
 
 from pathlib import Path
+import argparse
 import tensorflow as tf
 #tf.debugging.set_log_device_placement(True)
 from keras.preprocessing.image import ImageDataGenerator
@@ -11,6 +12,12 @@ import mlflow
 from support_functions import *
 
 from tensorflow.keras import datasets, layers, models
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--learning-rate")
+args = parser.parse_args()
+
+
 (train_images, train_labels), (test_images, test_labels) = datasets.cifar10.load_data()
 
 train_images, test_images = train_images / 255.0, test_images / 255.0
@@ -50,7 +57,7 @@ model = models.Sequential([
 	layers.Dropout(0.5),
 	layers.Dense(10, activation="softmax")
 ])
-opt = tf.keras.optimizers.Adam(learning_rate=0.001)
+opt = tf.keras.optimizers.Adam(learning_rate=float(args.learning_rate))
 model.compile(optimizer=opt,
 			loss="sparse_categorical_crossentropy",
 			metrics=["accuracy"])

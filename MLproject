@@ -1,0 +1,10 @@
+name: Example ML project
+
+docker_env:
+  image:  example_ml
+
+entry_points:
+  main:
+    parameters:
+      learning_rate: {type: float, default: 0.1}
+    command: "python train_mlflow.py --learning-rate {learning_rate}"
