@@ -1,0 +1,6 @@
+FROM continuumio/anaconda3
+WORKDIR "/tmp"
+
+RUN pip install mlflow\  
+    mlf-core\
+    plotnine
